@@ -53,13 +53,13 @@ public class Student {
     // this registers a course for a student if they aren't in it already
     public boolean registerCourse(Course course) {
 
-        if (course = null) {
+        if (course == null) {
             return false;
         }
 
         for (Course registeredCourses : registeredCourses) {
             if (registeredCourses.getCourseCode().equals(course.getCourseCode())) {
-                return false:
+                return false;
             }
         }
 
@@ -73,7 +73,7 @@ public class Student {
     }
 
     // print a summary of student info
-    public String getStudentId() {
+    public String getStudentInfo() {
         return "Name: " + firstName + " " + lastName
                 + "\nStudent ID: " + studentId
                 + "\nPhone Number: " + phoneNumber
