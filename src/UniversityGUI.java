@@ -29,6 +29,7 @@ public class UniversityGUI extends JFrame {
         tabs.addTab("Available Courses", createCoursesPanel());
         tabs.addTab("Student Records", createRecordsPanel());
         tabs.addTab("Graduate Research", createResearchPanel());
+        tabs.addTab("Grade Management", createGradesPanel());
 
         add(tabs);
     }
@@ -273,6 +274,86 @@ public class UniversityGUI extends JFrame {
 
         return panel;
     }
+
+    
+    // the interface for assigning grades and viewing updated GPA
+    private JPanel createGradesPanel() {
+
+        JPanel panel = new JPanel(new BorderLayout(10, 10));
+        panel.setBorder(BorderFactory.createEmptyBorder(25, 25, 25, 25));
+
+        JPanel form = new JPanel(new GridLayout(4, 2, 10, 10));
+
+        JTextField studentId = new JTextField();
+        JComboBox<String> courseBox = new JComboBox<>();
+        JComboBox<String> gradeBox = new JComboBox<>(
+                new String[]{"A", "B", "C", "D", "F"}
+        );
+
+        // this updates the course dropdown and is based on the entered student ID
+        JButton loadCoursesButton = new JButton("Load Registered Courses");
+
+        loadCoursesButton.addActionListener(e -> {
+            courseBox.removeAllItems();
+
+            Student student = manager.findStudent(studentId.getText().trim());
+
+            if (student == null) {
+                showMessage("Student not found.");
+                return;
+            }
+
+            for (Course course : student.getRegisteredCourses()) {
+                courseBox.addItem(course.getCourseCode());
+            }
+
+            if (courseBox.getItemCount() == 0) {
+                showMessage("This student has no registered courses.");
+            }
+        });
+
+        form.add(new JLabel("Student ID:"));
+        form.add(studentId);
+        form.add(new JLabel("Registered Course:"));
+        form.add(courseBox);
+        form.add(new JLabel("Letter Grade:"));
+        form.add(gradeBox);
+        form.add(new JLabel(""));
+        form.add(loadCoursesButton);
+
+        JButton assignButton = new JButton("Assign Grade");
+
+        JTextArea resultArea = new JTextArea();
+        resultArea.setEditable(false);
+
+        assignButton.addActionListener(e -> {
+            String id = studentId.getText().trim();
+            String courseCode = (String) courseBox.getSelectedItem();
+            String grade = (String) gradeBox.getSelectedItem();
+
+            if (id.isEmpty() || courseCode == null || grade == null) {
+                showMessage("Please select a student, course, and grade.");
+                return;
+            }
+
+            if (manager.assignGrade(id, courseCode, grade)) {
+                resultArea.setText(manager.getStudentRecord(id));
+                showMessage("Grade assigned successfully!");
+            } else {
+                showMessage("Unable to assign grade. Check the student and course.");
+            }
+        });
+
+        JPanel topPanel = new JPanel(new BorderLayout(10, 10));
+        topPanel.add(form, BorderLayout.CENTER);
+        topPanel.add(assignButton, BorderLayout.SOUTH);
+
+        panel.add(topPanel, BorderLayout.NORTH);
+        panel.add(new JScrollPane(resultArea), BorderLayout.CENTER);
+
+        return panel;
+    }
+
 
     // displays a popup message to the user.
     private void showMessage(String message) {

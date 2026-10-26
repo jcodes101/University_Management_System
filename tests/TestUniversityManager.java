@@ -39,5 +39,25 @@ public class TestUniversityManager {
         );
 
         System.out.println("\nDuplicate registration accepted: " + duplicate);
+
+        
+        // this tests grade assignment and GPA calculation
+        manager.registerStudentForCourse("1001", "MATH341");
+
+        boolean grade1 = manager.assignGrade("1001", "COMP360", "A");
+        boolean grade2 = manager.assignGrade("1001", "MATH341", "B");
+
+        System.out.println("\n========== GRADE TEST ==========");
+        System.out.println("COMP360 grade assigned: " + grade1);
+        System.out.println("MATH341 grade assigned: " + grade2);
+        System.out.println("Updated GPA: " + manager.calculateGPA("1001"));
+
+        // a check for whether the calculated GPA is correct
+        if (Math.abs(manager.calculateGPA("1001") - 3.5) < 0.001) {
+            System.out.println("GPA test passed!");
+        } else {
+            System.out.println("GPA test failed!");
+        }
+
     }
 }

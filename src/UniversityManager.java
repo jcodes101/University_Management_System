@@ -134,9 +134,55 @@ public class UniversityManager {
             }
         }
 
+        // this is so any students with no grades assigned to them have "N/A" shown
+        boolean hasGrades = false;
+
+        for (Course course : student.getRegisteredCourses()) {
+            if (course.getGradePoints() >= 0) {
+                hasGrades = true;
+                break;
+            }
+        }
+
         record.append("\nGPA: ");
-        record.append(String.format("%.2f", calculateGPA(studentId)));
+
+        if (hasGrades) {
+            record.append(String.format("%.2f", calculateGPA(studentId)));
+        } else {
+            record.append("N/A");
+        }
 
         return record.toString();
     }
+
+    
+    // this is what assigns a grade to a course registered by a student
+    public boolean assignGrade(String studentId, String courseCode, String grade) {
+
+        Student student = findStudent(studentId);
+
+        if (student == null || courseCode == null || grade == null) {
+            return false;
+        }
+
+        String validGrade = grade.trim().toUpperCase();
+
+        // and only allow standard letter grades
+        if (!validGrade.equals("A") && !validGrade.equals("B")
+                && !validGrade.equals("C") && !validGrade.equals("D")
+                && !validGrade.equals("F")) {
+            return false;
+        }
+
+        // this let's the user find the course in this student's registered courses
+        for (Course course : student.getRegisteredCourses()) {
+            if (course.getCourseCode().equalsIgnoreCase(courseCode.trim())) {
+                course.setGrade(validGrade);
+                return true;
+            }
+        }
+
+        return false;
+    }
+
 }
